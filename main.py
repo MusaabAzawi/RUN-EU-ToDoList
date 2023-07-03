@@ -1,16 +1,19 @@
+from pathlib import Path
 from openpyxl import Workbook, load_workbook
-import os
+from tkinter import Tk, Canvas, Button
+
+OUTPUT_PATH = Path(__file__).parent
 
 projects_file_path = "projects.xlsx"
 employees_file_path = "employees.xlsx"
 
 def create_excel_files():
-    if not os.path.isfile(projects_file_path):
+    if not Path(projects_file_path).is_file():
         workbook = Workbook()
         workbook.save(projects_file_path)
         print("Projects file created.")
 
-    if not os.path.isfile(employees_file_path):
+    if not Path(employees_file_path).is_file():
         workbook = Workbook()
         workbook.create_sheet(title="Employees")
         workbook.save(employees_file_path)
