@@ -215,6 +215,17 @@ def overview_tasks():
     else:
         print("No tasks found for any employee.")
 
+
+def list_task():
+    workbook = load_workbook(filename="project.xlsx")
+    print(workbook.sheetnames)
+    SH1 = workbook.active
+    for value in SH1.iter_rows(min_row=1,max_row=2,min_col =1,max_col=2, values_only=True):
+        print(value)
+        return value
+
+
+
 def main():
     '''Main function that provides a menu-driven interface for project management and overview,
     allowing users to create projects, assign employees, add tasks, mark tasks as complete, 
@@ -235,6 +246,7 @@ def main():
         print("9. Overview of tasks for each employee")
         print("\n==========================")
         print("10. Exit")
+        print("11 List Task")
 
         choice = input("Enter your choice (1-10): ")
 
@@ -272,8 +284,11 @@ def main():
             overview_tasks()
         elif choice == "10":
             break
+        elif choice == "11":
+            list_task()
         else:
             print("Invalid choice. Please try again.")
+            
 
 if __name__ == "__main__":
     main()
