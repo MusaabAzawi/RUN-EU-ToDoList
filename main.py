@@ -7,12 +7,17 @@ OUTPUT_PATH = Path(__file__).parent
 projects_file_path = "projects.xlsx"
 
 def create_excel_file():
+    '''Check if the projects file already exists, and if not, create a new Excel workbook,
+    save it as the projects file, and print a message confirming the creation.'''
     if not Path(projects_file_path).is_file():
         workbook = Workbook()
         workbook.save(projects_file_path)
         print("Projects file created.")
 
 def create_project():
+    '''Prompt the user to enter a project name, check if the project already exists in the workbook,
+ and if not, create a new sheet with the project name, save the workbook, 
+ and print a success message.'''
     project_name = input("Enter the project name: ")
     workbook = load_workbook(projects_file_path)
     if project_name in workbook.sheetnames:
@@ -24,6 +29,9 @@ def create_project():
     print("New project created successfully!")
 
 def assign_employee(project_name, employee_id):
+    '''Load the workbook, check if the specified project exists, if yes, append the employee ID 
+    to the tasks sheet of the project, save the workbook, and print a success message.
+    If the project does not exist, print an error message.'''
     workbook = load_workbook(projects_file_path)
     if project_name in workbook.sheetnames:
         tasks_sheet = workbook[project_name]
@@ -44,6 +52,10 @@ def add_task(project_name, employee_id, task, priority):
         print("Project not found.")
 
 def mark_complete(project_name, employee_id, task):
+    ''' Load the workbook, check if the specified project exists, if yes, append the task 
+    details (employee ID, task, priority, and status) to the tasks sheet of the project, 
+    save the workbook, and print a success message. 
+    If the project does not exist, print an error message.'''
     workbook = load_workbook(projects_file_path)
     if project_name in workbook.sheetnames:
         tasks_sheet = workbook[project_name]
@@ -58,6 +70,11 @@ def mark_complete(project_name, employee_id, task):
         print("Project not found.")
 
 def display_tasks(project_name, employee_id):
+    ''' Load the workbook, check if the specified project exists, if yes, iterate through 
+    the tasks sheet of the project to find tasks assigned to the specified employee ID. 
+    Append the task details (task and status) to the tasks list. 
+    If tasks are found, print them with a header. If no tasks are found,
+    print a corresponding message. If the project does not exist, print an error message.'''
     workbook = load_workbook(projects_file_path)
     if project_name in workbook.sheetnames:
         tasks_sheet = workbook[project_name]
@@ -76,6 +93,9 @@ def display_tasks(project_name, employee_id):
         print("Project not found.")
 
 def create_employee(name, surname, dob):
+    '''Load the workbook, create an "Employees" sheet if it doesn't exist, retrieve the next
+    available employee ID, append the employee details (ID, name, surname, and date of birth)
+    to the "Employees" sheet, save the workbook, and print a success message.'''
     workbook = load_workbook(projects_file_path)
     employee_sheet = workbook.create_sheet(title="Employees")
     next_employee_id = get_next_employee_id()
@@ -84,6 +104,9 @@ def create_employee(name, surname, dob):
     print("New employee created successfully!")
 
 def get_next_employee_id():
+    '''Load the workbook, retrieve the "Employees" sheet, iterate over the rows starting
+    from the second row, extract the employee ID from each row, find the maximum ID, 
+    and return the next available employee ID by incrementing the maximum ID by 1.'''
     workbook = load_workbook(projects_file_path)
     employee_sheet = workbook["Employees"]
     max_id = 0
@@ -94,12 +117,16 @@ def get_next_employee_id():
     return max_id + 1
 
 def get_all_projects():
+    '''# Load the workbook, retrieve the names of all the sheets (projects), 
+    remove the "Employees" sheet, and return the list of projects.'''
     workbook = load_workbook(projects_file_path)
     projects = workbook.sheetnames
     projects.remove("Employees")
     return projects
 
 def get_all_employees():
+    '''Load the workbook, retrieve the "Employees" sheet, iterate through its rows to 
+    collect employee information, and return a list of formatted employee details.'''
     workbook = load_workbook(projects_file_path)
     employee_sheet = workbook["Employees"]
     employees = []
@@ -111,6 +138,13 @@ def get_all_employees():
     return employees
 
 def overview_projects():
+    '''Retrieve all projects, iterate through each project, and print the project name
+    along with the associated tasks and their statuses.'''
+    projects = get_all_projects()
+    if len(projects) > 0:
+        print("Projects Overview:")
+        for project in projects:
+            print(f"Project: {project}")
     projects = get_all_projects()
     if len(projects) > 0:
         print("Projects Overview:")
@@ -130,6 +164,9 @@ def overview_projects():
         print("No projects found.")
         
 def overview_employees():
+    '''Retrieve the employee sheet from the workbook, iterate through each employee, 
+    and print their ID, name, and surname if employees exist; otherwise, 
+    display appropriate messages.'''
     workbook = load_workbook(projects_file_path)
     if "Employees" in workbook.sheetnames:
         employee_sheet = workbook["Employees"]
@@ -148,6 +185,13 @@ def overview_employees():
         print("Employees sheet not found.")
 
 def overview_tasks():
+    ''' Retrieve the tasks for each project in the workbook and display an overview of 
+    tasks including the project name, employee ID, task, and status;
+    if no tasks exist for a project, display appropriate messages.'''
+    workbook = load_workbook(projects_file_path)
+    projects = workbook.sheetnames
+    if "Employees" in projects:
+        projects.remove("Employees")
     workbook = load_workbook(projects_file_path)
     projects = workbook.sheetnames
     if "Employees" in projects:
@@ -172,6 +216,10 @@ def overview_tasks():
         print("No tasks found for any employee.")
 
 def main():
+    '''Main function that provides a menu-driven interface for project management and overview,
+    allowing users to create projects, assign employees, add tasks, mark tasks as complete, 
+    display tasks for employees, create employees, and view project, employee, 
+    and task overviews.'''
     create_excel_file()
     while True:
         print("\n=== PROJECT MANAGEMENT ===")
