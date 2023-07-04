@@ -196,9 +196,9 @@ def main():
             employee_id = input("Enter the employee ID: ")
             display_tasks(project, employee_id)
         elif choice == "6":
-            name = input("Enter the employee's name: ")
-            surname = input("Enter the employee's surname: ")
-            dob = input("Enter the employee's date of birth: ")
+            name = input("Enter the employee's first name: ")
+            surname = input("Enter the employee's last name: ")
+            dob = input("Enter the employee's date of birth(dd.mm.yyyy): ")
             create_employee(name, surname, dob)
         elif choice == "7":
             overview_projects()
