@@ -16,6 +16,8 @@ def create_excel_files():
     if not Path(employees_file_path).is_file():
         workbook = Workbook()
         workbook.create_sheet(title="Employees")
+        employee_sheet = workbook["Employees"]
+        employee_sheet.append(["Employee ID", "Name", "Surname", "DOB"])
         workbook.save(employees_file_path)
         print("Employees file created.")
 
@@ -23,7 +25,8 @@ def create_project():
     project_name = input("Enter the project name: ")
     workbook = Workbook()
     workbook.remove(workbook.active)
-    workbook.create_sheet(title=project_name)
+    tasks_sheet = workbook.create_sheet(title=project_name)
+    tasks_sheet.append(["Employee ID", "Task", "Priority", "Status"])
     workbook.save(projects_file_path)
     print("New project created successfully!")
 
@@ -83,6 +86,8 @@ def create_employee(name, surname, dob):
     workbook = load_workbook(employees_file_path)
     employee_sheet = workbook["Employees"]
     next_employee_id = get_next_employee_id()
+    if next_employee_id == 1:
+        employee_sheet.append(["Employee ID", "Name", "Surname", "DOB"])
     employee_sheet.append([next_employee_id, name, surname, dob])
     workbook.save(employees_file_path)
     print("New employee created successfully!")
@@ -114,21 +119,24 @@ def get_all_employees():
         employees.append(f"ID: {employee_id}, Name: {name} {surname}")
     return employees
 
+def display_all_employees():
+    employees = get_all_employees()
+    if len(employees) > 0:
+        print("Present Employees:")
+        print("\n".join(employees))
+    else:
+        print("No employees found.")
+
 def overview_projects():
     projects = get_all_projects()
+    if "Employees" in projects:
+        projects.remove("Employees")
+
     if len(projects) > 0:
         print("Projects Overview:")
         print("\n".join(projects))
     else:
         print("No projects found.")
-
-def overview_employees():
-    employees = get_all_employees()
-    if len(employees) > 0:
-        print("Employees Overview:")
-        print("\n".join(employees))
-    else:
-        print("No employees found.")
 
 def overview_tasks():
     workbook = load_workbook(projects_file_path)
@@ -167,12 +175,15 @@ def main():
         print("4. Mark a task as complete")
         print("5. Display tasks for an employee")
         print("6. Create a new employee")
+        print("\n=== OVERVIEW SECTION ===")
         print("7. Overview of all projects")
         print("8. Overview of all employees")
         print("9. Overview of tasks for each employee")
-        print("10. Exit")
+        print("10. Display all present employees")
+        print("\n==========================")
+        print("11. Exit")
 
-        choice = input("Enter your choice (1-10): ")
+        choice = input("Enter your choice (1-11): ")
 
         if choice == "1":
             create_project()
@@ -189,25 +200,26 @@ def main():
         elif choice == "4":
             project = input("Enter the project name: ")
             employee_id = input("Enter the employee ID: ")
-            task = input("Enter the task to mark as complete: ")
+            task = input("Enter the task: ")
             mark_complete(project, employee_id, task)
         elif choice == "5":
             project = input("Enter the project name: ")
             employee_id = input("Enter the employee ID: ")
             display_tasks(project, employee_id)
         elif choice == "6":
-            name = input("Enter the employee's first name: ")
-            surname = input("Enter the employee's last name: ")
-            dob = input("Enter the employee's date of birth(dd.mm.yyyy): ")
+            name = input("Enter the employee's name: ")
+            surname = input("Enter the employee's surname: ")
+            dob = input("Enter the employee's date of birth: ")
             create_employee(name, surname, dob)
         elif choice == "7":
             overview_projects()
         elif choice == "8":
-            overview_employees()
+            display_all_employees()
         elif choice == "9":
             overview_tasks()
         elif choice == "10":
-            print("Exiting...")
+            display_all_employees()
+        elif choice == "11":
             break
         else:
             print("Invalid choice. Please try again.")
