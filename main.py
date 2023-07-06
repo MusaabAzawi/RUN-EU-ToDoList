@@ -8,11 +8,13 @@ projects_file_path = "projects.xlsx"
 
 def create_excel_file():
     '''Check if the projects file already exists, and if not, create a new Excel workbook,
-    save it as the projects file, and print a message confirming the creation.'''
+    save it as the projects file, create the "Employees" sheet, and print a message confirming the creation.'''
     if not Path(projects_file_path).is_file():
         workbook = Workbook()
         workbook.save(projects_file_path)
-        print("Projects file created.")
+        workbook.create_sheet(title="Employees")  # Create the "Employees" sheet
+        workbook.save(projects_file_path)
+        print("Projects file created with 'Employees' sheet.")
 
 def create_project():
     '''Prompt the user to enter a project name, check if the project already exists in the workbook,
