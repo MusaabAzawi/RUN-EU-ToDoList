@@ -9,11 +9,15 @@ projects_file_path = "projects.xlsx"
 def create_excel_file():
     '''Check if the projects file already exists, and if not, create a new Excel workbook,
     save it as the projects file, create the "Employees" sheet, and print a message confirming the creation.'''
+    emp = "Employees"
     if not Path(projects_file_path).is_file():
         workbook = Workbook()
         workbook.save(projects_file_path)
-        workbook.create_sheet(title="Employees")  # Create the "Employees" sheet
+        workbook.create_sheet(title="Employees")# Create the "Employees" sheet
         workbook.save(projects_file_path)
+        workbook[emp].append(["ID", "Name", "Surname", "Date of Birth"])
+        workbook.save(projects_file_path)
+        
         print("Projects file created with 'Employees' sheet.")
 
 def create_project(project_name):
@@ -28,6 +32,7 @@ def create_project(project_name):
         return flag
 
     workbook.create_sheet(title=project_name)
+    workbook[project_name].append(["Employee ID", "Task", "Status"])
     workbook.save(projects_file_path)
     flag = True
     return flag
@@ -40,39 +45,49 @@ def assign_employee(project_name, employee_id):
     workbook = load_workbook(projects_file_path)
     if project_name in workbook.sheetnames:
         tasks_sheet = workbook[project_name]
+        tasks_sheet.active
         tasks_sheet.append([f"ID: {employee_id}"])
         workbook.save(projects_file_path)
         print("Employee assigned to project successfully!")
     else:
         print("Project not found.")
 
-def add_task(project_name, employee_id, task, priority):
+def add_task(project_name, employee_id, task):
     workbook = load_workbook(projects_file_path)
-    if project_name in workbook.sheetnames:
+    sheet = workbook["Employees"]
+    employee_list = list()
+    for row in sheet.iter_rows(max_col=1, values_only=True):
+        employee_list.append(row[0])
+    print(employee_list)
+    if employee_id in employee_list:
         tasks_sheet = workbook[project_name]
-        tasks_sheet.append([f"ID: {employee_id}", task, priority, "Incomplete"])
+        tasks_sheet.append([f"{employee_id}", task, "Incomplete"])
         workbook.save(projects_file_path)
         print("Task added successfully!")
+        flag = True
+        return flag
     else:
-        print("Project not found.")
+        flag = False
+        print("Employee not found.")
+        return flag
 
-def mark_complete(project_name, employee_id, task):
+def mark_complete(project_name, task_name):
     ''' Load the workbook, check if the specified project exists, if yes, append the task 
     details (employee ID, task, priority, and status) to the tasks sheet of the project, 
     save the workbook, and print a success message. 
     If the project does not exist, print an error message.'''
     workbook = load_workbook(projects_file_path)
-    if project_name in workbook.sheetnames:
-        tasks_sheet = workbook[project_name]
-        for row in tasks_sheet.iter_rows(min_row=2, values_only=True):
-            if row[0] == f"ID: {employee_id}" and row[1] == task:
-                tasks_sheet.cell(row=row[0].row, column=4).value = "Complete"
-                workbook.save(projects_file_path)
-                print("Task marked as complete.")
-                return
-        print("Task not found.")
-    else:
-        print("Project not found.")
+    tasks_sheet = workbook[project_name]
+    k=1
+    flag = False
+    for row in tasks_sheet.iter_rows(min_row=2, values_only=True):
+        k += 1
+        if row[1] == task_name:
+            tasks_sheet.cell(row=k, column=3, value="Complete")
+            workbook.save(projects_file_path)
+            print("Task marked as complete.")
+            flag = True
+    return flag
 
 def display_tasks(project_name, employee_id):
     ''' Load the workbook, check if the specified project exists, if yes, iterate through 
@@ -109,7 +124,7 @@ def create_employee(name, surname, dob):
     workbook = load_workbook(projects_file_path)
     employee_sheet = workbook["Employees"]
     next_employee_id = get_next_employee_id()
-    employee_sheet.append([f"ID: {next_employee_id}", name, surname, dob])
+    employee_sheet.append([f"{next_employee_id}", name, surname, dob])
     workbook.save(projects_file_path)
     #gui section
     flag = True
@@ -123,7 +138,7 @@ def get_next_employee_id():
     employee_sheet = workbook["Employees"]
     max_id = 0
     for row in employee_sheet.iter_rows(min_row=2, values_only=True):
-        employee_id = row[0].split(":")[1].strip()
+        employee_id = row[0]
         if int(employee_id) > max_id:
             max_id = int(employee_id)
     return max_id + 1
@@ -183,7 +198,7 @@ def overview_employees():
     if "Employees" in workbook.sheetnames:
         employee_sheet = workbook["Employees"]
         employees = []
-        for row in employee_sheet.iter_rows(min_row=2, values_only=True):
+        for row in employee_sheet.iter_rows(min_row=1, values_only=True):
             employee_id = row[0]
             name = row[1]
             surname = row[2]
@@ -235,6 +250,19 @@ def list_proj():
             proj_list.append(sheet.title)
     return proj_list
 
+def overview(proj_name):
+    wb = load_workbook("projects.xlsx")
+    tasks_sheet = wb[proj_name]
+    tasks = []
+    for row in tasks_sheet.iter_rows(min_row=2, values_only=True):
+        tasks.append(row)
+    for k in range(len(tasks)):   
+        for i in tasks[k][0]:
+            text = str("Employee ID: " + i + "\n")
+            if tasks[k][0] == i:
+                text = str(text + "\t" + tasks[k][1] + " | " + tasks[k][2])
+    return text
+
 def main():
     '''Main function that provides a menu-driven interface for project management and overview,
     allowing users to create projects, assign employees, add tasks, mark tasks as complete, 
@@ -269,8 +297,7 @@ def main():
             project = input("Enter the project name: ")
             employee_id = input("Enter the employee ID: ")
             task = input("Enter the task: ")
-            priority = input("Enter the priority: ")
-            add_task(project, employee_id, task, priority)
+            add_task(project, employee_id, task)
         elif choice == "4":
             project = input("Enter the project name: ")
             employee_id = input("Enter the employee ID: ")
