@@ -16,7 +16,7 @@ def create_excel_file():
         workbook.save(projects_file_path)
         print("Projects file created with 'Employees' sheet.")
 
-def create_project():
+def create_project(project_name):
     '''Prompt the user to enter a project name, check if the project already exists in the workbook,
  and if not, create a new sheet with the project name, save the workbook, 
  and print a success message.'''
@@ -107,7 +107,7 @@ def create_employee(name, surname, dob):
         return flag
     
     workbook = load_workbook(projects_file_path)
-    employee_sheet = workbook.create_sheet(title="Employees")
+    employee_sheet = workbook["Employees"]
     next_employee_id = get_next_employee_id()
     employee_sheet.append([f"ID: {next_employee_id}", name, surname, dob])
     workbook.save(projects_file_path)
@@ -231,7 +231,8 @@ def list_proj():
     wb = load_workbook("projects.xlsx")
     proj_list = list()
     for sheet in wb.worksheets:
-        proj_list.append(sheet.title)
+        if sheet.title != "Employees" and sheet.title != "Sheet":
+            proj_list.append(sheet.title)
     return proj_list
 
 def main():
