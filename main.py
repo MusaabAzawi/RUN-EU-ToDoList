@@ -18,15 +18,18 @@ def create_project():
     '''Prompt the user to enter a project name, check if the project already exists in the workbook,
  and if not, create a new sheet with the project name, save the workbook, 
  and print a success message.'''
-    project_name = input("Enter the project name: ")
+    #project_name = input("Enter the project name: ")
     workbook = load_workbook(projects_file_path)
     if project_name in workbook.sheetnames:
-        print("Project already exists.")
-        return
+        flag = False
+        #print("Project already exists.")
+        return flag
 
     workbook.create_sheet(title=project_name)
     workbook.save(projects_file_path)
-    print("New project created successfully!")
+    flag = True
+    return flag
+    #print("New project created successfully!")
 
 def assign_employee(project_name, employee_id):
     '''Load the workbook, check if the specified project exists, if yes, append the employee ID 
@@ -96,12 +99,19 @@ def create_employee(name, surname, dob):
     '''Load the workbook, create an "Employees" sheet if it doesn't exist, retrieve the next
     available employee ID, append the employee details (ID, name, surname, and date of birth)
     to the "Employees" sheet, save the workbook, and print a success message.'''
+    if len(dob) != 10:
+        flag = False
+        #print("Project already exists.")
+        return flag
+    
     workbook = load_workbook(projects_file_path)
     employee_sheet = workbook.create_sheet(title="Employees")
     next_employee_id = get_next_employee_id()
     employee_sheet.append([f"ID: {next_employee_id}", name, surname, dob])
     workbook.save(projects_file_path)
-    print("New employee created successfully!")
+    #gui section
+    flag = True
+    return flag
 
 def get_next_employee_id():
     '''Load the workbook, retrieve the "Employees" sheet, iterate over the rows starting
@@ -215,16 +225,12 @@ def overview_tasks():
     else:
         print("No tasks found for any employee.")
 
-
-def list_task():
-    workbook = load_workbook(filename="project.xlsx")
-    print(workbook.sheetnames)
-    SH1 = workbook.active
-    for value in SH1.iter_rows(min_row=1,max_row=2,min_col =1,max_col=2, values_only=True):
-        print(value)
-        return value
-
-
+def list_proj():
+    wb = load_workbook("projects.xlsx")
+    proj_list = list()
+    for sheet in wb.worksheets:
+        proj_list.append(sheet.title)
+    return proj_list
 
 def main():
     '''Main function that provides a menu-driven interface for project management and overview,
