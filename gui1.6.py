@@ -226,7 +226,7 @@ def opentaskadd(proj_name):
     label1.configure(
         background="#424242",
         font="{Roboto} 14 {}",
-        text="Enter Employee Name")
+        text="Enter Employee ID")
     label1.grid(padx=10, pady=10)
     
     name = ttk.Entry(neww)

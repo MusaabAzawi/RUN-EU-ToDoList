@@ -1,6 +1,5 @@
 from pathlib import Path
 from openpyxl import Workbook, load_workbook
-from tkinter import Tk, Canvas, Button
 
 OUTPUT_PATH = Path(__file__).parent
 
@@ -254,7 +253,7 @@ def overview(proj_name):
     wb = load_workbook("projects.xlsx")
     tasks_sheet = wb[proj_name]
     tasks = []
-    for row in tasks_sheet.iter_rows(min_row=2, values_only=True):
+    for row in tasks_sheet.iter_rows(min_row=1, values_only=True):
         tasks.append(row)
     for k in range(len(tasks)):   
         for i in tasks[k][0]:
